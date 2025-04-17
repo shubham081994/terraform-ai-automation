@@ -1,0 +1,29 @@
+trigger:
+- main
+
+
+variables:
+  - group: AzureOpenAISecrets  # Linking the variable group with secrets
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install openai python-dotenv
+  displayName: 'Install dependencies'
+
+- script: |
+    python validate_all_tf.py
+  displayName: 'Run Terraform Code Validation using Azure OpenAI'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: 'reports'
+    artifactName: 'validation-report'
